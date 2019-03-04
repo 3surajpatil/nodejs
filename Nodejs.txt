@@ -1,0 +1,869 @@
+node version used :- v10.15.1
+==============================
+reference :- https://www.guru99.com/node-js-modules-create-publish.html
+
+What is Node.js?
+Node.js is an open-source, cross-platform runtime environment used for development of server-side web applications. 
+Node.js applications are written in JavaScript and can be run on a wide variety of operating systems.
+
+--> Node.js is best to use for applications which have small processes and requires less cpu time.
+--> Node.js should not be used for applications which need long time to process data. because of which it needs dedicated CPU time for long.
+--> Node is structured to be single threaded. If any application is required to carry out some long running calculations in the background. 
+	So if the server is doing some calculation, it won't be able to process any other requests. 
+	As discussed above, Node.js is best when processing needs less dedicated CPU time
+--> Node.js is abstraction for google chrome's V8 javascript engine.
+--> it can be used in Game servers,Chat applications,Advertisement servers,Streaming servers etc.
+
+What are modules in Node.js?
+--> A module in Node.js is a logical encapsulation of code in a single unit. 
+-->There are many readymade modules available in the market which can be used within Node js.
+
+1) Express framework – Express is a minimal and flexible Node js web application framework that provides 
+a robust set of features for the web and Mobile applications.
+2) Socket.io - Socket.IO enables real-time bidirectional event-based communication. This module is good for creation of chatting based applications.
+3) Jade - Jade is a high-performance template engine and implemented with JavaScript for node and browsers.
+4) MongoDB - The MongoDB Node.js driver is the officially supported node.js driver for MongoDB.
+5) Restify - restify is a lightweight framework, similar to express for building REST APIs
+6) Bluebird - Bluebird is a fully featured promise library with focus on innovative features and performance
+
+
+---> In order to use modules in a Node.js application, they first need to be installed using the Node package manager.
+
+
+
+What is function expression ?
+---> 
+normal javascript function looks like 
+
+function sayHi(){
+console.log('hi...!');
+}
+sayHi(); //function will be called.
+
+function expression looks like 
+var sayBye=function(){
+console.log('Bye...!');
+}
+
+sayBye();
+
+reference := https://www.youtube.com/playlist?list=PL4cUxeGkcC9gcy9lrvMJ75z9maRw4byYp
+============================================================================================
+
+--->one function can also be passed as a parameter to another function.
+// declaring first function.
+var sayBye=function(){
+console.log('Bye...!');
+}
+
+//declaring second function with one argument..and executing that argument function.
+function fun(functionAsParam){
+    functionAsParam();
+}
+//passing 'sayBye' function as argument to function 'fun'.
+fun(sayBye);
+
+
+
+creating a module and importing in another module.
+=====================================================
+
+lets say we want to export some function outside of file.
+
+counter.js
+----------
+
+/*
+creating a counter function to calculate the elements of array.
+*/
+
+var count=function(arr){
+console.log('total elements in array are:='+arr.length);
+}
+
+//exporting count function.
+module.exports=count;
+
+
+app.js.
+--------
+//importing counter.
+var count=require('./counter');
+
+//create the array of elements.
+var arr=['suraj','supath','shahrukh','pankaj'];
+
+//call the function.
+count(arr);
+
+
+
+What is template string?
+--> normal string is what we specify in '' (single quotes or double quotes in javascript.)
+--> template string is what we specify in `` 
+--> benifit of template string is we can use expression within template string. 
+	e.g. normal string :- 'addition of two no is'+a+b
+		template string :- `addition of two no is ${a+b}`
+	
+
+How to export multiple elements of a module ?
+--> in above application we exported count from counter.js.
+--> if we have multiple functions or variables that we want to export then there could be following approaches.
+
+approach 1 )  mathOperation.js
+--------------
+
+
+	var count=function(arr){
+console.log('total elements in array are:='+arr.length);
+}
+
+
+var add=function(a,b){    
+    return a+b;
+}
+
+var pi=3.142;
+
+
+module.exports.count=count;
+module.exports.add=add;
+module.exports.pi=pi;
+
+approach 2) mathOperation.js
+--------------
+
+in above file we can replace module.exports as 
+
+module.exports={
+    count:count,
+    add:add,
+    pi:pi
+}
+
+
+approach 3 ) mathOperation.js
+--------------
+
+module.exports.count=function(arr){
+console.log('total elements in array are:='+arr.length)
+}
+
+
+module.exports.add=function(a,b){    
+    return a+b;
+}
+
+module.exports.pi=3.142;
+
+
+
+app.js
+--------
+//importing counter.
+var mathOperations=require('./mathOperations');
+
+//create the array of elements.
+var arr=['suraj','supath','shahrukh','pankaj'];
+
+//call the function.
+console.log(mathOperations.count(arr) );
+
+//console.log(mathOperations.add(5,mathOperations.pi));
+
+
+
+
+Reading and writing in a file 
+=================================
+
+var fs=require('fs')
+
+/*Synchronous way, i.e. this operations will block the file for other threads.
+var output=fs.readFileSync('readme.txt','utf8');
+fs.writeFileSync('writeme.txt',output);
+*/
+
+//asynchronous way.
+fs.readFile('readme.txt','UTF8',function(err,data){
+
+    fs.writeFile('writeme.txt',data,function(err){
+       if(err) throw err;
+    });
+});
+
+
+
+
+//to delete a file.
+/*fs.unlink('writeme.txt',(err)=>{
+    if(err) throw err;
+});
+
+// to create a file.
+fs.mkdir('stuff',function(err){
+    if(err) throw err;
+});
+*/
+
+// to content from a file and to write to another file asynchronously.
+var fs=require('fs')
+
+fs.readFile('./readme.txt','UTF8',(err,data)=>{
+    if(err) throw err;    
+
+    fs.writeFile('./stuff/writeme.txt',data,(err)=>{
+      if(err) throw err;          
+    });
+
+});
+
+---> difference between asynchronous vs synchronous read of file is, in synchronous it will read file completely and return data.
+	and in case of asynchronous way , it will return the control immidiately. so data read in async way would be available in that function only.
+
+
+	
+Example for emmiting an event.
+=====================================	
+var util=require('util');
+const EventEmitter = require('events');
+
+
+class Person extends EventEmitter{    
+    constructor(name){
+        super();
+        this.name=name;
+    }
+};
+
+
+var suraj=new Person('suraj');
+var supath=new Person('supath');
+var pankaj =new Person('pankaj');
+var shahrukh=new Person('shahrukh');
+
+//creating a person array.
+var personArr=[suraj,supath,pankaj,shahrukh];
+
+//attaching listener to each person's 'speak' event
+personArr.forEach(function(person){
+person.on('speak',function(mssg){
+console.log(`${person.name} : ${mssg}`);    
+});
+});
+
+suraj.emit('speak','hi there...!');
+supath.emit('speak', 'chalo niche...!');
+shahrukh.emit('speak','nahi upar chalte hain');
+
+
+	
+// creating a http server in nodejs application.
+======================================================
+var http=require('http');
+
+var server=http.createServer((req,res)=>{
+    res.writeHead(200, {'Content-Type':'text/plain'});
+    console.log('getting request at '+req.url);
+    res.end('welcome to node world.....!');
+});
+
+
+server.listen(9090,'127.0.0.1');
+
+console.log('server listening...!');
+
+
+//readWriteStream example.
+===============================================
+
+var fs=require('fs');
+
+var readStream=fs.createReadStream(__dirname+'/readme.txt','UTF8');
+var writeStream=fs.createWriteStream(__dirname+'/stuff/writeme.txt','UTF8')
+
+readStream.on('data',function(chunk){
+    writeStream.write(chunk);
+console.log('data written successfully...!');
+
+});
+
+
+an alternative to above example is using pipe on readStream and passing writeStream to it.
+---------------------------------------------------------------------------------------------------------
+var fs=require('fs');
+
+var readStream=fs.createReadStream(__dirname+'/readme.txt','UTF8');
+var writeStream=fs.createWriteStream(__dirname+'/stuff/writeme.txt','UTF8')
+
+readStream.pipe(writeStream);
+
+// giving html page as response back to browser.
+
+var http=require('http');
+var fs=require('fs');
+
+var server=http.createServer((req,res)=>{
+    res.writeHead(200, {'Content-Type':'text/html'});
+    var readStream=fs.createReadStream(__dirname+'/index.html','utf8');
+
+    console.log('getting request at '+req.url);
+    readStream.pipe(res);
+});
+
+
+server.listen(9090,'127.0.0.1');
+
+console.log('server listening...!');
+
+
+
+
+
+//sending json response to browser.
+---> thing to note here is the person object is not serialized. so we need JSON.stringify() method to convert it.
+
+var http=require('http');
+var fs=require('fs');
+
+class Person{
+
+    constructor(id,name,contact){
+        this.id=id;
+        this.name=name;
+        this.contact=contact;
+    }
+}
+
+
+var server=http.createServer((req,res)=>{
+    res.writeHead(200, {'Content-Type':'application/json'});
+    var p1=new Person(1,'suraj','8999611265');
+
+    res.end(JSON.stringify(p1));
+
+    console.log('getting request at '+req.url);
+    readStream.pipe(res);
+});
+
+
+server.listen(9090,'127.0.0.1');
+
+console.log('server listening...!');
+
+
+
+Routing in node js
+===================================
+
+
+var http=require('http');
+var fs=require('fs');
+
+class Person{
+
+    constructor(id,name,contact){
+        this.id=id;
+        this.name=name;
+        this.contact=contact;
+    }
+}
+
+
+var server=http.createServer((req,res)=>{
+
+    console.log('getting request at '+req.url);
+    if(req.url==='/'){
+        res.writeHead(200,'text/html');
+        fs.createReadStream(__dirname+'/index.html').pipe(res);
+    }
+   else if(req.url==='/persons')
+    {
+        res.writeHead(200, {'Content-Type':'application/json'});
+        var p1=new Person(1,'suraj','8999611265');
+        var p2=new Person(2,'supath','8198736749');
+        var p3=new Person(3,'shahrukh','1876485042');
+
+        var persons=[p1,p2,p3];
+
+        res.end(JSON.stringify(persons));
+    }
+    else{
+        res.writeHead(404, {'Content-Type':'text/html'});
+        fs.createReadStream(__dirname+'/404.html').pipe(res);
+    }    
+      
+});
+
+
+server.listen(9090,'127.0.0.1');
+
+console.log('server listening...!');
+
+
+
+
+---> express package helps us in routing , templating and search.
+---> NPM :- NODE PACKAGE MANAGER. (www.npmjs.com)
+---> npm install express  (this command will install express modules in your application.)
+
+
+---> till now we needed to restart our application manually. to avoid this we can use 'nodemon'.
+--> to install nodemon command is > 'npm install nodemon -g  (-g is for global.)
+---> once installation is complete, we can start our application as > nodemon app.js
+---> after this whenever we make changes to our application, it will monitor and restart app for us.
+
+if you want to package
+======================
+> npm init (after this it will fire series of input param questions such as entry point, author git repo etc..)
+
+---> once complete, package.json file will be created.
+
+
+using express module.
+======================
+
+to install express use following commands.
+> npm install -g express
+> npm install express -save (this will add express as a dependency to our application.)
+
+
+
+Example application to create a server with express 
+======================================================
+---> plz notice that we have a get method with path='profile/:id' , this demonstrates how we can access request params in nodejs.
+
+
+var express=require('express');
+
+var app=express();
+
+app.get('/',function(req,res){
+
+    res.send('welcome to express get method..!');
+});
+
+app.get('/profile/:id',function(req,res){
+    res.send('you have accessed profile with id :- '+req.params.id);
+});
+
+app.get('/contact',function(req,res){
+    res.send('contact page...!');
+});
+
+
+app.listen(9090,'127.0.0.1');
+
+
+
+---> how to display dynamic data on the html page ?
+---> answer is using ejs template with express module.
+---> install the ejs module and save it's dependency.
+---> npm install ejs --save
+
+---> we need to tell express that ejs will be our view engine.
+--->  by default ejs looks views/templates in view folder. so create one view folder and create your template with .ejs extention.
+---> ejs file would contain data same as html, but it would have some scriplet like tags inside it to display dynamic data.
+---> we can use response.render(--) to send
+
+example application 
+--------------------
+
+dir/expressDemo.js
+----------------------
+
+var express=require('express');
+
+var app=express();
+app.set('view engine','ejs');
+/*
+we can set different directory as view directory with below.
+app.set('views', __dirname+'/view');
+*/
+
+app.get('/',function(req,res){
+
+    res.send('welcome to express get method..!');
+});
+
+var data={age: 29, job: 'ninja', hobbies: ['sleeping','eating','running']};
+
+//note the res.render method usage here...
+app.get('/profile/:name',function(req,res){    
+    res.render('profile',{person: req.params.name, data: data});    
+});
+
+app.get('/contact',function(req,res){
+    res.sendFile(__dirname+'/contact.html');
+});
+
+
+app.listen(9090,'127.0.0.1');
+
+dir/views/profile.ejs
+-----------------------
+
+<html>
+    <head>
+        <style>
+            body{background-color: azure; font-family: sans-serif}
+            h1{color:crimson;text-align: center;font-size: xx-large}
+            p{color:darkgoldenrod; text-align: center; font-size: x-large}
+        </style>
+    </head>
+    <body>
+        <h1>Welcome to the profile of <%= person %></h1>
+        <p><b>Age:-</b><%=data.age%></p>
+        <p><b>Job:-</b><%=data.job%></p>
+        <p><b>Hobbies:-</b></p>
+        <ul>
+            <% data.hobbies.forEach(function(item){ %>
+                <li><%= item %></li>
+             <% });%>   
+        </ul>
+    </body>
+</html>
+
+
+
+
+---> what if we want to include some comman page in other pages like navigation page ?
+---> we have <% include partials/page_name.ejs %>
+---> example would be as follows.
+
+
+views/partials/nav.ejs  
+--------
+<nav>
+    <ul>
+        <li><a href="/">home</a></li>
+        <li><a href="/contact">contact</a></li>
+        <li><a href="/profile/">profile</a></li>
+    </ul>
+</nav>
+
+views/index.ejs   
+-----------
+
+<html>
+    <head>
+        <style>
+            body{background-color: azure; font-family: sans-serif}
+            h1{color:crimson;text-align: center;font-size: xx-large}
+            p{color:darkgoldenrod; text-align: center; font-size: x-large}
+        </style>
+    </head>
+    <body>
+            <% include partials/nav.ejs %>
+        <h1>Welcome to node.js world...!</h1>
+        <p>this is highly responsive.</p>
+    </body>
+</html>
+	
+in expressDemo.js
+------------------	
+	app.get('/contact',function(req,res){
+    res.render('contact');
+});
+
+	
+
+---> simmilerly we can include nav.ejs in all the ejs files, provided all html files are converted to ejs files.
+
+
+---> including stylesheet with help of middleware service.
+
+---> we can put our css file inside /styles/index.css
+
+/styles/index.css
+-----------------
+body{background-color: azure; font-family: sans-serif}
+h1{color:crimson;text-align: center;font-size: xx-large}
+p{color:darkgoldenrod; text-align: center; font-size: x-large}
+ul li{ color:blueviolet;text-align: center}
+
+---> then we can use express.static(-) method to include all static css files.
+
+index.ejs
+----------
+
+<html>
+    <head>   
+            <link rel="stylesheet" href="/styles/index.css">    
+    </head>
+    <body>
+        <% include partials/nav.ejs %>
+        <h1>Welcome to node.js world...!</h1>
+        <p>this is highly responsive.</p>
+    </body>
+</html>
+
+expressDemo.ejs 
+----------------
+
+var express=require('express');
+
+var app=express();
+app.set('view engine','ejs');
+
+// note the usage of express.static here...
+//here '/styles' is route and express.static('styles') is directory.
+
+app.use('/styles',express.static('styles'));
+/*
+we can set different directory as view directory with below.
+app.set('views', __dirname+'/view');
+*/
+
+app.get('/',function(req,res){
+
+    res.render('index');
+});
+
+var data={age: 29, job: 'ninja', hobbies: ['sleeping','eating','running']};
+
+app.get('/profile/:name',function(req,res){    
+    res.render('profile',{person: req.params.name, data: data});    
+});
+
+app.get('/contact',function(req,res){
+    res.render('contact');
+});
+app.listen(9090,'127.0.0.1');
+
+
+
+Query Strings
+==============
+---> the querystring starts with '?' symbol in url path.
+---> below example demonstrates how to populate the querystring values in the form field.
+---> we get req.query property that give us the query parameters. we can pass that to res.render method.
+
+sample query string.
+
+http://localhost:9090/contact?name=suraj&dept=dt&email=example@email.com
+
+in expressDemo.js
+====================
+//note here we are passing 'req.query' as 'qs' variable , we will access in contact.ejs file with 'qs'
+app.get('/contact',function(req,res){    
+    res.render('contact',{qs:req.query});
+});
+
+
+in contact.ejs
+====================
+
+<html>
+    <head> 
+        <link rel="stylesheet" href="/styles/index.css">
+    </head>
+    <body>
+            <% include partials/nav.ejs %>          
+        <h1>Contact Page...!</h1>
+        <p>this is highly responsive.</p>
+
+        <form id="contact-form">
+                <label for="who">Who do you want to contact?</label>
+                <input type="text" name="who" value="<%=qs.name%>">
+                <br>
+                <label for="department">Which department?</label>
+                <input type="text" name="department" value="<%=qs.dept%>">
+                <br>
+                <label for="email">Your email:</label>
+                <input type="email" name="email" value="<%=qs.email%>">
+                <br>
+                <input type="submit" value="submit">
+         </form>?
+
+    </body>
+</html>
+
+
+
+---> how to get data submitted through a post request ?
+---> we have another module to consume post request data.  > npm install body-parser --save
+---> we can further see examples and usage here https://www.npmjs.com/package/body-parser 
+
+expressDemo.js
+=================
+
+var express=require('express');
+var bodyParser = require('body-parser');
+
+var app=express();
+
+app.set('view engine','ejs');
+app.use('/styles',express.static('styles'));
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// here we are creating parser middleware..
+var urlencodedParser = bodyParser.urlencoded({ extended: false })
+ 
+
+/*
+we can set different directory as view directory with below.
+app.set('views', __dirname+'/view');
+*/
+
+app.get('/',function(req,res){
+
+    res.render('index');
+});
+
+var data={age: 29, job: 'ninja', hobbies: ['sleeping','eating','running']};
+
+app.get('/profile/:name',function(req,res){    
+    res.render('profile',{person: req.params.name, data: data});    
+});
+
+app.get('/contact',function(req,res){    
+    res.render('contact',{qs:req.query});
+});
+
+app.get('/contact',function(req,res){        
+    res.render('contact',{qs:req.query});
+});
+
+
+//registering urlencodedParser here.
+app.post('/contact',urlencodedParser,function(req,res){   
+    
+    res.render('contact-success',{data:req.body});    
+});
+
+
+app.listen(9090,'127.0.0.1');
+
+
+views/contact-success.ejs
+============================
+
+<html>
+    <head> 
+        <link rel="stylesheet" href="/styles/index.css">
+    </head>
+    <body>
+            <% include partials/nav.ejs %>          
+        <h1>Contact Success Page...!</h1>
+        <p>you contacted to <%=data.who%> from department <%=data.department%> , we will contact you on
+            email id <%=data.email%></p>
+    </body>
+    </html>
+
+
+
+Nodejs with Mongo db or Mysql db
+----------------------------------
+
+---> For MySQL, the required module is called "mysql" and for using MongoDB the required module to be installed is "Mongoose."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
